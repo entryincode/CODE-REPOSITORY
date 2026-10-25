@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#fbfbfa" />
+    <meta name="description" content="코드를 기록하고, 나누고, 다시 찾는 개발 문서 커뮤니티." />
+    <title>CODE REPOSITORY — 코드 문서 커뮤니티</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="./styles.css" />
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="./site-config.js"></script>
+    <script type="module" src="./app.js"></script>
+  </head>
+  <body>
+    <header class="topbar">
+      <a class="brand" href="#" id="homeLink" aria-label="Code Repository 홈">
+        <span class="brand-mark" aria-hidden="true"><span class="brand-glyph"></span></span>
+        <span class="brand-name">CODE REPOSITORY</span>
+      </a>
+      <label class="search-box" for="searchInput">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.8" cy="10.8" r="6.8"/><path d="m16 16 4.5 4.5"/></svg>
+        <input id="searchInput" type="search" placeholder="문서 검색하기" autocomplete="off" />
+        <kbd>⌘ K</kbd>
+      </label>
+      <div class="top-actions">
+        <button class="write-button" id="writeButton" type="button"><span>＋</span> 문서 작성</button>
+        <button class="account-button" id="accountButton" type="button"><span class="account-avatar" id="accountAvatar">G</span><span id="accountLabel">로그인</span></button>
+      </div>
+    </header>
+
+    <main class="main-shell" id="feedView">
+      <section class="feed-intro">
+        <div><p class="eyebrow"><span class="live-dot"></span> DOCUMENTS BY DEVELOPERS</p><h1>코드를 나누고,<br /><span>함께 기록해요.</span></h1><p class="intro-text">누군가의 작은 기록이 다음 프로젝트의 출발점이 되도록.</p></div>
+        <div class="intro-symbol" aria-hidden="true"><span>&lt;/&gt;</span><i></i></div>
+      </section>
+
+      <section class="feed-controls" aria-label="문서 필터">
+        <div class="filter-tabs" role="group" aria-label="정렬">
+          <button class="filter-tab is-active" type="button" data-filter="latest">최신 문서</button>
+          <button class="filter-tab" type="button" data-filter="popular">인기 문서</button>
+          <button class="filter-tab" type="button" data-filter="saved">저장한 문서</button>
+        </div>
+        <div class="topic-filters" id="topicFilters" aria-label="주제"></div>
+      </section>
+
+      <div class="results-line"><span id="resultCount"></span><button type="button" id="clearSearch" class="clear-search" hidden>검색 지우기 ×</button></div>
+      <section class="document-grid" id="documentGrid" aria-live="polite" aria-label="문서 목록"></section>
+      <footer class="feed-footer"><span>CODE REPOSITORY</span><span>배움은 나눌수록 선명해져요.</span></footer>
+    </main>
+
+    <main class="reader-shell" id="readerView" hidden>
+      <aside class="reader-sidebar">
+        <button class="back-link" id="backToFeed" type="button"><span>←</span> 전체 문서</button>
+        <div class="sidebar-divider"></div>
+        <p class="sidebar-label">문서 탐색</p>
+        <button class="sidebar-item is-active" id="readerAllButton" type="button"><span>▤</span> 모든 문서</button>
+        <button class="sidebar-item" id="readerSavedButton" type="button"><span>♧</span> 저장한 문서</button>
+        <div class="sidebar-divider"></div>
+        <p class="sidebar-label">주제</p>
+        <div id="readerTopics" class="reader-topics"></div>
+        <div class="sidebar-hint"><span class="hint-icon">✳</span><p>알게 된 걸 기록하면<br />다음 사람의 길이 돼요.</p></div>
+      </aside>
+      <article class="reader-content" id="readerContent"></article>
+    </main>
+
+    <dialog class="modal login-modal" id="loginDialog" aria-labelledby="loginTitle">
+      <form method="dialog" class="close-form"><button class="close-button" aria-label="닫기">×</button></form>
+      <span class="modal-logo" aria-hidden="true"><span class="brand-glyph"></span></span>
+      <p class="modal-kicker">WELCOME TO CODE REPOSITORY</p>
+      <h2 id="loginTitle">Google 계정으로 시작해요.</h2>
+      <p class="modal-copy">코드 기록을 쓰고, 마음에 드는 문서를 저장해 보세요.</p>
+      <div id="googleButton" class="google-button-slot"></div>
+      <p id="loginMessage" class="login-message" role="status"></p>
+      <details class="client-setup" id="clientSetup">
+        <summary>Google 로그인 설정</summary>
+        <p>배포자가 발급한 Google OAuth 웹 Client ID를 입력하세요.</p>
+        <div class="client-row"><input id="clientIdInput" type="text" placeholder="xxxx.apps.googleusercontent.com" autocomplete="off" /><button id="saveClientId" type="button">저장</button></div>
+        <small>Google Cloud Console에서 GitHub Pages 주소를 승인된 JavaScript 출처로 등록해야 합니다.</small>
+      </details>
+      <p class="modal-footnote">정적 데모에서는 로그인 정보와 문서가 이 브라우저에 저장됩니다.</p>
+    </dialog>
+
+    <dialog class="modal editor-modal" id="editorDialog" aria-labelledby="editorTitle">
+      <form method="dialog" class="close-form"><button class="close-button" aria-label="닫기">×</button></form>
+      <div class="editor-heading"><div><p class="modal-kicker">WRITE A DOCUMENT</p><h2 id="editorTitle">새 문서 작성</h2></div><span class="markdown-badge">MARKDOWN</span></div>
+      <form id="editorForm" class="editor-form">
+        <label class="sr-only" for="docTitle">문서 제목</label><input id="docTitle" class="title-field" maxlength="100" required placeholder="문서 제목을 입력하세요" />
+        <div class="editor-meta-row"><label class="sr-only" for="docCategory">주제</label><select id="docCategory"><option>Python</option><option>JavaScript</option><option>React</option><option>HTML · CSS</option><option>Git · GitHub</option><option>기타</option></select><input id="docSummary" maxlength="150" placeholder="짧은 소개 (선택)" /></div>
+        <div class="editor-workspace">
+          <div class="editor-pane"><div class="pane-label"><span>내용 편집</span><span>```python 으로 코드 블록을 만들어요</span></div><label class="sr-only" for="docBody">문서 내용 Markdown</label><textarea id="docBody" required spellcheck="false" placeholder="# 제목\n\n내용을 자유롭게 작성하세요.\n\n```python\nprint('Hello, World!')\n```"></textarea></div>
+          <div class="preview-pane"><div class="pane-label"><span>미리보기</span><span>LIVE PREVIEW</span></div><div class="markdown-preview" id="markdownPreview"></div></div>
+        </div>
+        <div class="editor-footer"><span id="editorStatus">문서를 작성하면 자동으로 미리보기에 반영돼요.</span><button class="publish-button" type="submit">문서 올리기 <span>↗</span></button></div>
+      </form>
+    </dialog>
+
+    <dialog class="modal profile-modal" id="profileDialog" aria-labelledby="profileTitle">
+      <form method="dialog" class="close-form"><button class="close-button" aria-label="닫기">×</button></form>
+      <div class="profile-avatar" id="profileAvatar">G</div><p class="modal-kicker">MY ACCOUNT</p><h2 id="profileTitle">내 계정</h2><p class="profile-name" id="profileName"></p>
+      <button class="signout-button" id="signOutButton" type="button">로그아웃</button>
+    </dialog>
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+  </body>
+</html>
